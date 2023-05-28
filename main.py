@@ -9,10 +9,10 @@ class MyClient(discord.Client):
         # 2) change bot status
         print('Logged on as {0}!'.format(self.user))
         await self.change_presence(status=discord.Status.online, activity=discord.Game("대기중"))
-        
+
         # 1) send message
-        #channel = self.get_channel(CHANNEL_ID)
-        #await channel.send('Hell World')
+        # channel = self.get_channel(CHANNEL_ID)
+        # await channel.send('Hell World')
 
     async def on_message(self, message):
         if message.author == self.user:
@@ -20,6 +20,8 @@ class MyClient(discord.Client):
 
         if message.content == 'ping':
             await message.channel.send('pong {0.author.mention}'.format(message))
+        elif message.content == '출석' or message.content == '출첵':
+            await message.add_reaction('👍')
         else:
             answer = self.get_answer(message.content)
             await message.channel.send(answer)
@@ -58,6 +60,7 @@ class MyClient(discord.Client):
                     return "질문과 가장 유사한 질문 [" + key + "]에 대한 답변이에요.\n" + answer_dict[key]
 
         return "알 수 없는 질의입니다. 답변을 드릴 수 없습니다."
+
 
 intents = discord.Intents.default()
 intents.message_content = True

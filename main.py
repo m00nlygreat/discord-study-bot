@@ -1,4 +1,5 @@
 import discord
+import time
 from datetime import datetime
 
 from config import TOKEN, CHANNEL_ID
@@ -20,15 +21,27 @@ class MyClient(discord.Client):
         if message.author == self.user:
             return
 
+        now = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+
         if message.content == 'ping':
             await message.channel.send('pong {0.author.mention}'.format(message))
         elif message.content == '출석' or message.content == '출첵':
             count = 1
 
             if message.author in self.attendance.keys():
-                count = self.attendance[message.author] + 1
+                total_check_in = self.attendance[message.author]['t_check_in']
+                self.attendance[message.author]['t_check_in'] = total_check_in + 1
+                self.attendance[message.author]['last_start_time'] = now
+            else:
+                new_check_in = {'t_check_in': count, 'last_start_time': now, 'last_end_time': now, 'total_hours': 0}
+                self.attendance[message.author] = new_check_in
 
-            self.attendance[message.author] = count
+            await message.add_reaction('👍')
+        elif message.content == '마무리':
+            self.attendance[message.author]['last_end_time'] = now
+            st = time.mktime(datetime.strptime(self.attendance[message.author]['last_start_time'], '%Y-%m-%d %H:%M:%S').timetuple())
+            ed = time.mktime(datetime.today().timetuple())
+            self.attendance[message.author]['total_hours'] = round((ed-st) / (3600 * 24))
             await message.add_reaction('👍')
         elif message.content == '현황' or message.content == '조회':
             answer = self.get_attendance()
@@ -54,7 +67,8 @@ class MyClient(discord.Client):
         answer_dict = {
             "안녕": "안녕하세요. MyBot입니다.",
             "요일": ":calendar: 오늘은 {}입니다.".format(self.get_day_of_week()),
-            "시간": ":clock9: 현재 시간은 {}입니다.".format(self.get_time())
+            "시간": ":clock9: 현재 시간은 {}입니다.".format(self.get_time()),
+            "뭐해": "음악을 듣고 있어요 🎵"
         }
 
         if trim_text == '' or None:

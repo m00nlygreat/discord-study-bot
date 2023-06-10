@@ -1,6 +1,10 @@
 import discord
 import time
+import os
 from datetime import datetime
+
+from config import CHANNEL_NAME
+DS_CHANNEL_NAME = os.environ.get('CHANNEL_NAME')
 
 
 class DiscordManager(discord.Client):
@@ -18,7 +22,7 @@ class DiscordManager(discord.Client):
     async def on_message(self, message):
         if message.author == self.user:
             return
-        if message.channel.name == '출석':
+        if message.channel.name == DS_CHANNEL_NAME or message.channel.name == CHANNEL_NAME:
             now = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
             if message.content == 'ping':

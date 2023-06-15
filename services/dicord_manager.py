@@ -33,7 +33,7 @@ class DiscordManager(discord.Client):
             cc_data = {}
             now = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
-            if before.channel is None:   # Enter
+            if before.channel is None or (before.channel is not None and after.channel is not None and (after.channel.name == VOICE_ROOM_NAME or after.channel.name == DS_VOICE_ROOM_NAME)):   # Enter
                 cc_data['start_time'] = now
             elif after.channel is None:  # Exit
                 if user_info in self.concentration_time.keys():

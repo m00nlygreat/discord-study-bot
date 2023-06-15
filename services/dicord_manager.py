@@ -35,7 +35,7 @@ class DiscordManager(discord.Client):
 
             if before.channel is None or (before.channel is not None and after.channel is not None and (after.channel.name == VOICE_ROOM_NAME or after.channel.name == DS_VOICE_ROOM_NAME)):   # Enter
                 cc_data['start_time'] = now
-            elif after.channel is None:  # Exit
+            elif after.channel is None or (before.channel is not None and (before.channel.name == VOICE_ROOM_NAME or before.channel.name == DS_VOICE_ROOM_NAME)):  # Exit
                 if user_info in self.concentration_time.keys():
                     cc_data = self.concentration_time[user_info]
                 cc_data['end_time'] = now

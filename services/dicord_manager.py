@@ -80,7 +80,7 @@ class DiscordManager(discord.Client):
                 self.g_service.add_row(data)
 
                 await message.add_reaction('👍')
-            elif message.content == '마무리':
+            elif '마무리' in message.content:
                 # get sheet by name
                 try:
                     self.g_service.set_worksheet_by_name('sessions')
@@ -110,7 +110,7 @@ class DiscordManager(discord.Client):
                                 self.g_service.worksheet.update(f'D{row_num}', get_time_interval(entry, now, "%Y-%m-%d %H:%M:%S"))
                                 await message.add_reaction('👍')
                                 return False
-            elif message.content == '현황' or message.content == '조회':
+            elif '현황' in message.content or '조회' in message.content:
                 answer = get_attendance(self.attendance, self.concentration_time)
                 await message.channel.send(answer)
             else:

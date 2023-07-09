@@ -4,5 +4,5 @@ TOKEN = '(str)<DISCORD_TOKEN>'
 CHANNEL_NAME = '(str)CHANNEL_NAME'
 VOICE_ROOM_NAME = '(str)VOICE_ROOM_NAME'
 # google auth
-GOOGLE_JSON_AUTH = '(str)'
+GOOGLE_JSON_AUTH = '(json type)'
 GOOGLE_SHEET_URL = '(str)'

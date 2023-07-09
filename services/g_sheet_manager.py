@@ -1,3 +1,4 @@
+import json
 import gspread
 import os
 from google.oauth2 import service_account
@@ -21,7 +22,13 @@ class GSpreadService:
 
         # print(EV_G_JSON_AUTH)
 
-        credentials = service_account.Credentials.from_service_account_info(GOOGLE_JSON_AUTH if EV_G_JSON_AUTH is None else EV_G_JSON_AUTH, scopes=scopes)
+        g_auth = GOOGLE_JSON_AUTH if EV_G_JSON_AUTH is None else EV_G_JSON_AUTH
+        if type(g_auth) == str:
+            # print('g auth is string')
+            g_auth = json.loads(g_auth)
+
+        # print(type(g_auth))
+        credentials = service_account.Credentials.from_service_account_info(g_auth, scopes=scopes)
         self.gc = gspread.authorize(credentials)
 
         spreadsheet_url = GOOGLE_SHEET_URL if EV_G_SHEET_URL is None else EV_G_SHEET_URL

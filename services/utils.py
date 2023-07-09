@@ -15,7 +15,7 @@ def get_time():
     return datetime.today().strftime("%H시 %M분 %S초")
 
 
-def get_time_interval(start, end, str_format=None):
+def get_time_interval(start, end, str_format=None, calc=None):
     if type(start) == str:
         start = datetime.strptime(start, str_format).timetuple()
     if type(end) == str:
@@ -23,7 +23,18 @@ def get_time_interval(start, end, str_format=None):
 
     st = time.mktime(start)
     ed = time.mktime(end)
-    return round((ed-st) / (3600 * 24))
+
+    if calc is 'hour':
+        return round((ed-st) / (3600 * 24))
+    else:
+        return ed-st
+
+
+def get_date_from_str(str_date, str_format='%Y-%m-%d %H:%M:%S'):
+    if type(str_date) != str:
+        return None
+
+    return datetime.strptime(str_date, str_format)
 
 
 def get_answer(text):

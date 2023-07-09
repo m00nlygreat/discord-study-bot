@@ -26,6 +26,8 @@ class GSpreadService:
         if type(g_auth) == str:
             # print('g auth is string')
             g_auth = json.loads(g_auth)
+        elif type(g_auth) == dict:
+            g_auth = json.loads(g_auth.auth)
 
         # print(type(g_auth))
         credentials = service_account.Credentials.from_service_account_info(g_auth, scopes=scopes)

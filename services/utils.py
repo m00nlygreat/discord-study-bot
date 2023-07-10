@@ -24,7 +24,7 @@ def get_time_interval(start, end, str_format=None, calc=None):
     st = time.mktime(start)
     ed = time.mktime(end)
 
-    if calc is 'hour':
+    if calc == 'hour':
         return round((ed-st) / (3600 * 24))
     else:
         return ed-st

@@ -29,7 +29,7 @@ class GSpreadService:
         elif type(g_auth) == dict:
             g_auth = json.loads(g_auth.auth)
 
-        # print(type(g_auth))
+        print(type(g_auth), g_auth)
         credentials = service_account.Credentials.from_service_account_info(g_auth, scopes=scopes)
         self.gc = gspread.authorize(credentials)
 

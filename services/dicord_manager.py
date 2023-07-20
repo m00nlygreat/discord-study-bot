@@ -5,7 +5,7 @@ from datetime import datetime
 import gspread.exceptions
 
 from config import CHANNEL_NAME, VOICE_ROOM_NAME
-from services.utils import get_attendance, get_answer, get_time_interval, get_date_from_str
+from services.utils import get_attendance, get_time_interval, get_date_from_str
 from services.g_sheet_manager import GSpreadService
 
 DS_CHANNEL_NAME = os.environ.get('CHANNEL_NAME')

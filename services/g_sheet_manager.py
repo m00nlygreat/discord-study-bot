@@ -21,24 +21,37 @@ class GSpreadService:
         ]
 
         # print(EV_G_JSON_AUTH)
-
         g_auth = GOOGLE_JSON_AUTH if EV_G_JSON_AUTH is None else EV_G_JSON_AUTH
+        
+        if EV_G_JSON_AUTH is not None:
+            print('[DEBUG] Use G-Auth environ')
+        else:
+            print('[DEBUG] Use G-Auth config')
+        
         if type(g_auth) == str:
-            # print('g auth is string')
+            print('[DEBUG] G-Auth type : String')
             g_auth = json.loads(g_auth)
         elif type(g_auth) == dict:
-            g_auth = json.loads(g_auth.auth)
+            print('[DEBUG] G-Auth type : Dict')
+            if 'auth' in g_auth:
+                g_auth = json.loads(g_auth.auth)
+            elif len(g_auth.keys()) == 1:
+                g_auth = g_auth[g_auth.keys()[0]]
+            else:
+                print('[DEBUG] Unknown G-Auth Key')
 
-        print(type(g_auth), g_auth)
+        # print(type(g_auth), g_auth)
         credentials = service_account.Credentials.from_service_account_info(g_auth, scopes=scopes)
         self.gc = gspread.authorize(credentials)
 
         spreadsheet_url = GOOGLE_SHEET_URL if EV_G_SHEET_URL is None else EV_G_SHEET_URL
+        print(f'[DEBUG] Use G-Spreadsheet url : {spreadsheet_url}')
 
         self.doc = self.gc.open_by_url(spreadsheet_url)
 
     def add_worksheet(self, name, columns=None):
         if self.doc is None:
+            print('[DEBUG] Not set doc')
             return
 
         ws = self.doc.add_worksheet(title=name, rows='100', cols='100')
@@ -51,6 +64,7 @@ class GSpreadService:
 
     def add_row(self, data):
         if self.worksheet is None:
+            print('[DEBUG] Not set worksheet')
             return
 
         self.worksheet.append_row(data)

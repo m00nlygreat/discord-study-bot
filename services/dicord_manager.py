@@ -38,6 +38,7 @@ class DiscordManager(discord.Client):
     async def on_voice_state_update(self, user, before, after):
         # print(user, before, after)
         person = f'{user.name}#{user.discriminator}' if user.discriminator != 0 else user.name
+        print(f'Catch voice room event: [{person}]------------------------------')
         if user == self.user:
             return
         if (before.channel is not None and (before.channel.name == VOICE_ROOM_NAME or before.channel.name == DS_VOICE_ROOM_NAME)) \
@@ -46,6 +47,7 @@ class DiscordManager(discord.Client):
 
             enter_type = check_channel_enter_type(before, after)
             if enter_type == 'enter':
+                print('Event type is ENTER---------------------------------------')
                 # make data
                 data = list()
                 data.append(now)                # (0) entry
@@ -58,13 +60,16 @@ class DiscordManager(discord.Client):
                 try:
                     self.g_service.set_worksheet_by_name('sessions')
                 except gspread.exceptions.WorksheetNotFound:
+                    print('Worksheet Not Found.. Add workshhet "sessions"---------')
                     self.g_service.add_worksheet('sessions', ['entry', 'leave', 'person', 'duration'])
                 self.g_service.add_row(data)
             elif enter_type == 'leave':
+                print('Event type is LEAVE----------------------------------------')
                 # get sheet by name
                 try:
                     self.g_service.set_worksheet_by_name('sessions')
                 except gspread.exceptions.WorksheetNotFound:
+                    print('Worksheet Not Found.. Add workshhet "sessions"---------')
                     self.g_service.add_worksheet('sessions', ['entry', 'leave', 'person', 'duration'])
 
                 # find user data
@@ -91,6 +96,7 @@ class DiscordManager(discord.Client):
                                 return False
 
     async def on_message(self, message):
+        print(f'Catch message event: [{message.author}]------------------------------')
         # 봇 이벤트 인 경우 종료
         if message.author == self.user:
             return

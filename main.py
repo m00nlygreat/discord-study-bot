@@ -12,8 +12,8 @@ client = DiscordManager(intents=intents)
 
 print(DISCORD_BOT_TOKEN)
 if DISCORD_BOT_TOKEN:
-    print('DISCORD_BOT_TOKEN--------------------')
+    print('Use environ [DISCORD_BOT_TOKEN]--------------------')
     client.run(DISCORD_BOT_TOKEN)
 else:
-    print('TOKEN--------------------------------')
+    print('Use config [TOKEN]---------------------------------')
     client.run(TOKEN)

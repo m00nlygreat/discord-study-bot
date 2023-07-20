@@ -32,7 +32,7 @@ class DiscordManager(discord.Client):
 
     async def on_ready(self):
         # print('Logged on as {0}!'.format(self.user))
-        await self.change_presence(status=discord.Status.online, activity=discord.Game("대기중"))
+        await self.change_presence(status=discord.Status.online)
 
         # google auth ready
         GSpreadService.ready(self.g_service)

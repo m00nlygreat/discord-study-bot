@@ -60,6 +60,10 @@ class GSpreadService:
         self.set_worksheet_by_name(name)
 
     def set_worksheet_by_name(self, name):
+        if self.doc is None:
+            print('[DEBUG] Not set doc')
+            return
+
         self.worksheet = self.doc.worksheet(name)
 
     def add_row(self, data):

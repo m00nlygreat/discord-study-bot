@@ -13,9 +13,11 @@ DS_VOICE_ROOM_NAME = os.environ.get('VOICE_ROOM_NAME')
 
 
 def check_channel_enter_type(before, after):
-    if before.channel is None or (before.channel is not None and after.channel is not None and (after.channel.name == VOICE_ROOM_NAME or after.channel.name == DS_VOICE_ROOM_NAME)):
+    if before.channel is None or (before.channel is not None and after.channel is not None and (
+            after.channel.name == VOICE_ROOM_NAME or after.channel.name == DS_VOICE_ROOM_NAME)):
         return 'enter'
-    elif after.channel is None or (before.channel is not None and (before.channel.name == VOICE_ROOM_NAME or before.channel.name == DS_VOICE_ROOM_NAME)):
+    elif after.channel is None or (before.channel is not None and (
+            before.channel.name == VOICE_ROOM_NAME or before.channel.name == DS_VOICE_ROOM_NAME)):
         return 'leave'
     else:
         return ''
@@ -41,8 +43,17 @@ class DiscordManager(discord.Client):
         print(f'[DEBUG] Catch voice room event: [{person}]')
         if user == self.user:
             return
-        if (before.channel is not None and (before.channel.name == VOICE_ROOM_NAME or before.channel.name == DS_VOICE_ROOM_NAME)) \
-                or (after.channel is not None and (after.channel.name == VOICE_ROOM_NAME or after.channel.name == DS_VOICE_ROOM_NAME)):
+        if before.channel.id == after.channel.id:
+            # 같은 채널 내 이벤트 패스
+            if after.self_stream:
+                print(f'[DEBUG] On Live: [{person}]')
+            elif before.self_stream and not after.self_stream:
+                print(f'[DEBUG] Off Live: [{person}]')
+            return
+        if (before.channel is not None and (
+                before.channel.name == VOICE_ROOM_NAME or before.channel.name == DS_VOICE_ROOM_NAME)) \
+                or (after.channel is not None and (
+                after.channel.name == VOICE_ROOM_NAME or after.channel.name == DS_VOICE_ROOM_NAME)):
             now = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
             enter_type = check_channel_enter_type(before, after)
@@ -92,7 +103,8 @@ class DiscordManager(discord.Client):
                             if self.g_service.worksheet.acell(f'B{row_num}').value is None:
                                 # update leave data
                                 self.g_service.worksheet.update(f'B{row_num}', now)
-                                self.g_service.worksheet.update(f'D{row_num}', get_time_interval(entry, now, "%Y-%m-%d %H:%M:%S"))
+                                self.g_service.worksheet.update(f'D{row_num}',
+                                                                get_time_interval(entry, now, "%Y-%m-%d %H:%M:%S"))
                                 return False
 
     async def on_message(self, message):
@@ -102,9 +114,6 @@ class DiscordManager(discord.Client):
             return
         # 설정된 채널인 경우만 아래 로직 수행
         if message.channel.name == DS_CHANNEL_NAME or message.channel.name == CHANNEL_NAME:
-            user = message.author
-            person = f'{user.name}#{user.discriminator}' if user.discriminator != 0 else user.name
-            now = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
             # 핑 테스트 용
             if message.content == 'ping':
                 await message.channel.send('pong {0.author.mention}'.format(message))

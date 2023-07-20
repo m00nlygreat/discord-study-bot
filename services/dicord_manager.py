@@ -43,7 +43,8 @@ class DiscordManager(discord.Client):
         print(f'[DEBUG] Catch voice room event: [{person}]')
         if user == self.user:
             return
-        if before.channel.id == after.channel.id:
+        if before.channel is not None and after.channel is not None and before.channel.id == after.channel.id:
+            print(f'[DEBUG] Pass voice room event : [{person}]')
             # 같은 채널 내 이벤트 패스
             if after.self_stream:
                 print(f'[DEBUG] On Live: [{person}]')

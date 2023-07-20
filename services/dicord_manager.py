@@ -124,6 +124,7 @@ class DiscordManager(discord.Client):
             elif '현황' in message.content or '조회' in message.content:
                 answer = get_attendance(self.attendance, self.concentration_time)
                 await message.channel.send(answer)
-            else:
-                answer = get_answer(message.content)
-                await message.channel.send(answer)
+            # 알수 없는 대답 일단 주석 처리
+            # else:
+            #     answer = get_answer(message.content)
+            #     await message.channel.send(answer)

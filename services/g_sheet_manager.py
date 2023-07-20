@@ -63,8 +63,12 @@ class GSpreadService:
         if self.doc is None:
             print('[DEBUG] Not set doc')
             return
-
-        self.worksheet = self.doc.worksheet(name)
+        try:
+            self.worksheet = self.doc.worksheet(name)
+        except gspread.exceptions.APIError:
+            print('[DEBUG] APIError.. API re-request ')
+            # APIError Exception 발생 시 재시도
+            self.worksheet = self.doc.worksheet(name)
 
     def add_row(self, data):
         if self.worksheet is None:

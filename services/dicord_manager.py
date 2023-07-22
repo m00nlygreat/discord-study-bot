@@ -2,8 +2,6 @@ import discord
 import os
 from datetime import datetime
 
-import gspread.exceptions
-
 from config import CHANNEL_NAME, VOICE_ROOM_NAME
 from services.utils import get_attendance, get_time_interval, get_date_from_str
 from services.g_sheet_manager import GSpreadService
@@ -67,22 +65,28 @@ class DiscordManager(discord.Client):
                 data.append(person)             # (2) person
                 data.append('')                 # (3) duration -> 마무리
 
+                # 사용자 목표 시간 조회
+                self.g_service.set_worksheet_by_name('members', ['id', 'name', 'goal'])
+                u_data_list = self.g_service.worksheet.findall(person)
+                if len(u_data_list) == 0:
+                    print('[DEBUG] Haven\'t set a goal')
+                    data.append('')                 # (4) goal
+                else:
+                    print('[DEBUG] Have set a goal')
+                    cell = u_data_list[0]
+                    row_num = cell.row
+                    goal = self.g_service.worksheet.acell(f'C{row_num}').value
+                    data.append(goal)               # (4) goal
+                ###################
+
                 # add data > 출석 데이터는 무조건 add
                 # print(data)
-                try:
-                    self.g_service.set_worksheet_by_name('sessions')
-                except gspread.exceptions.WorksheetNotFound:
-                    print('[DEBUG] Worksheet Not Found.. Add workshhet : sessions')
-                    self.g_service.add_worksheet('sessions', ['entry', 'leave', 'person', 'duration'])
+                self.g_service.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'goal'])
                 self.g_service.add_row(data)
             elif enter_type == 'leave':
                 print('[DEBUG] Event type is LEAVE')
                 # get sheet by name
-                try:
-                    self.g_service.set_worksheet_by_name('sessions')
-                except gspread.exceptions.WorksheetNotFound:
-                    print('[DEBUG] Worksheet Not Found.. Add workshhet : sessions')
-                    self.g_service.add_worksheet('sessions', ['entry', 'leave', 'person', 'duration'])
+                self.g_service.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'goal'])
 
                 # find user data
                 u_data_list = self.g_service.worksheet.findall(person)
@@ -126,12 +130,9 @@ class DiscordManager(discord.Client):
                 await message.channel.send(answer)
         # 목표 시간 등록 > !t{n} ex) !t3 : 3시간 목표
         if '!t' in message.content:
-            try:
-                self.g_service.set_worksheet_by_name('members')
-            except gspread.exceptions.WorksheetNotFound:
-                self.g_service.add_worksheet('members', ['id', 'name', 'goal'])
+            self.g_service.set_worksheet_by_name('members', ['id', 'name', 'goal'])
 
-            user_goal = message.content.replace("!t", "")
+            user_goal = int(message.content.replace("!t", ""))
             user = message.author
             person = f'{user.name}#{user.discriminator}' if user.discriminator != 0 else user.name
             nick_name = '' if message.author.nick is None else message.author.nick

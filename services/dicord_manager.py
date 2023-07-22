@@ -124,6 +124,33 @@ class DiscordManager(discord.Client):
             elif '현황' in message.content or '조회' in message.content:
                 answer = get_attendance(self.attendance, self.concentration_time)
                 await message.channel.send(answer)
+        # 목표 시간 등록 > !t{n} ex) !t3 : 3시간 목표
+        if '!t' in message.content:
+            try:
+                self.g_service.set_worksheet_by_name('members')
+            except gspread.exceptions.WorksheetNotFound:
+                self.g_service.add_worksheet('members', ['id', 'name', 'goal'])
+
+            user_goal = message.content.replace("!t", "")
+            user = message.author
+            person = f'{user.name}#{user.discriminator}' if user.discriminator != 0 else user.name
+            nick_name = '' if message.author.nick is None else message.author.nick
+            u_data_list = self.g_service.worksheet.findall(person)
+
+            if len(u_data_list) == 0:
+                data = list()
+                data.append(person)             # (0) person
+                data.append(nick_name)          # (1) name
+                data.append(user_goal)          # (2) goal
+                self.g_service.add_row(data)
+            else:
+                cell = u_data_list[0]
+                row_num = cell.row
+                # update goal data
+                self.g_service.worksheet.update(f'C{row_num}', user_goal)
+                self.g_service.worksheet.update(f'B{row_num}', nick_name)
+
+            await message.add_reaction('👍')
             # 알수 없는 대답 일단 주석 처리
             # else:
             #     answer = get_answer(message.content)

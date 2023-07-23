@@ -57,10 +57,20 @@ class GSpreadService:
         ws = self.doc.add_worksheet(title=name, rows='100', cols='100')
         if columns is not None:
             ws.append_row(columns)
-        self.set_worksheet_by_name(name)
+        self.set_worksheet_by_name(name, columns)
 
-    def set_worksheet_by_name(self, name):
-        self.worksheet = self.doc.worksheet(name)
+    def set_worksheet_by_name(self, name, columns):
+        if self.doc is None:
+            print('[DEBUG] Not set doc')
+            return
+        try:
+            self.worksheet = self.doc.worksheet(name)
+        except gspread.exceptions.APIError:
+            print('[DEBUG] APIError.. API re-request ')
+            # APIError Exception 발생 시 재시도
+            self.worksheet = self.doc.worksheet(name)
+        except gspread.exceptions.WorksheetNotFound:
+            self.add_worksheet(name, columns=columns)
 
     def add_row(self, data):
         if self.worksheet is None:
@@ -74,12 +84,12 @@ class GSpreadService:
 if __name__ == '__main__':
     g_test = GSpreadService()
     g_test.ready()
-    g_test.set_worksheet_by_name('sessions')
-    #### get all values
+    g_test.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'goal'])
+    # get all values
     # list_of_lists = g_test.worksheet.get_all_values()
     # print(list_of_lists)
 
-    #### get find cell
+    # get find cell
     cell_list = g_test.worksheet.findall("sudole#0")
     print(cell_list)
     # print(cell, cell.row, cell.col, cell.value)

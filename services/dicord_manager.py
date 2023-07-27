@@ -76,7 +76,7 @@ class DiscordManager(discord.Client):
                     cell = u_data_list[0]
                     row_num = cell.row
                     goal = self.g_service.worksheet.acell(f'C{row_num}').value
-                    data.append(int(goal))               # (4) goal
+                    data.append(int(goal)*60*60)               # (4) goal
                 ###################
 
                 # add data > 출석 데이터는 무조건 add

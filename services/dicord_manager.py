@@ -1,6 +1,6 @@
 import discord
 import os
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 from config import CHANNEL_NAME, VOICE_ROOM_NAME
 from services.utils import get_attendance, get_time_interval, get_date_from_str
@@ -53,7 +53,7 @@ class DiscordManager(discord.Client):
                 before.channel.name == VOICE_ROOM_NAME or before.channel.name == DS_VOICE_ROOM_NAME)) \
                 or (after.channel is not None and (
                 after.channel.name == VOICE_ROOM_NAME or after.channel.name == DS_VOICE_ROOM_NAME)):
-            now = datetime.today().strftime("%Y-%m-%d %H:%M:%S")
+            now = datetime.now(timezone(timedelta(hours=9))).timestamp()
 
             enter_type = check_channel_enter_type(before, after)
             if enter_type == 'enter':
@@ -100,10 +100,12 @@ class DiscordManager(discord.Client):
                     # print(entry)
                     # check entry data
                     if entry is not None:
-                        entry_date = get_date_from_str(entry)
-
-                        t_yyyymmdd = datetime.today().strftime("%Y-%m-%d")
-                        entry_yyyymmdd = entry_date.strftime("%Y-%m-%d")
+                        t_yyyymmdd = datetime.fromtimestamp(now).strftime("%Y-%m-%d")
+                        if '-' not in entry:
+                            entry_date = datetime.fromtimestamp(int(entry)).strftime("%Y-%m-%d")
+                        else:
+                            entry_date = get_date_from_str(entry).strftime("%Y-%m-%d")
+                        entry_yyyymmdd = entry_date
                         if t_yyyymmdd == entry_yyyymmdd:
                             if self.g_service.worksheet.acell(f'B{row_num}').value is None:
                                 # update leave data

@@ -17,17 +17,27 @@ def get_time():
 
 def get_time_interval(start, end, str_format=None, calc=None):
     if type(start) == str:
-        start = datetime.strptime(start, str_format).timetuple()
+        if '-' in start:
+            start = datetime.strptime(start, str_format).timetuple()
     if type(end) == str:
-        end = datetime.strptime(end, str_format).timetuple()
+        if '-' in start:
+            end = datetime.strptime(end, str_format).timetuple()
 
-    st = time.mktime(start)
-    ed = time.mktime(end)
+    if type(start) is str and '-' in start:
+        st = time.mktime(start)
+    else:
+        st = float(start)
 
+    if type(end) is str and '-' in end:
+        ed = time.mktime(end)
+    else:
+        ed = end
+
+    print(type(start), start, type(end), end)
     if calc == 'hour':
         return round((ed-st) / (3600 * 24))
     else:
-        return ed-st
+        return int(ed-st)
 
 
 def get_date_from_str(str_date, str_format='%Y-%m-%d %H:%M:%S'):

@@ -33,7 +33,7 @@ def get_time_interval(start, end, str_format=None, calc=None):
     else:
         ed = end
 
-    print(type(start), start, type(end), end)
+    # print(type(start), start, type(end), end)
     if calc == 'hour':
         return round((ed-st) / (3600 * 24))
     else:

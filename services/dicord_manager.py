@@ -36,7 +36,8 @@ class DiscordManager(discord.Client):
         GSpreadService.ready(self.g_service)
 
     async def on_voice_state_update(self, user, before, after):
-        print('[DEBUG] on_voice_state_update', user, before, after)
+        debug_now = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S")
+        print(debug_now, ' [DEBUG] on_voice_state_update', user, before, after)
         person = f'{user.name}#{user.discriminator}' if user.discriminator != 0 else user.name
         # print(f'[DEBUG] Catch voice room event: [{person}]')
         if user == self.user:
@@ -45,9 +46,9 @@ class DiscordManager(discord.Client):
             # print(f'[DEBUG] Pass voice room event : [{person}]')
             # 같은 채널 내 이벤트 패스
             if after.self_stream:
-                print(f'[DEBUG] On Live: [{person}]')
+                print(f'{debug_now} [DEBUG] On Live: [{person}]')
             elif before.self_stream and not after.self_stream:
-                print(f'[DEBUG] Off Live: [{person}]')
+                print(f'{debug_now} [DEBUG] Off Live: [{person}]')
             return
         if (before.channel is not None and (
                 before.channel.name == VOICE_ROOM_NAME or before.channel.name == DS_VOICE_ROOM_NAME)) \
@@ -115,7 +116,8 @@ class DiscordManager(discord.Client):
                                 return False
 
     async def on_message(self, message):
-        print(f'[DEBUG] on_message', message)
+        debug_now = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S")
+        print(f'{debug_now} [DEBUG] on_message', message)
         # print(f'[DEBUG] Catch message event: [{message.author}]')
         # 봇 이벤트 인 경우 종료
         if message.author == self.user:

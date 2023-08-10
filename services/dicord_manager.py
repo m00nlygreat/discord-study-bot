@@ -82,25 +82,38 @@ class DiscordManager(discord.Client):
                     self.g_service.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'weekly_goal'])
                     # 멤버 업데이트 후 현재 날짜의 요일 확인
                     # sessions 사용자의 데이터들 중 같은 주가 데이터 수집
+
+
                     # 기존 데이터가 있는 경우 유지..
                     # 없는 경우 ..?
-                    s_data_list = self.g_service.worksheet.findall(person)
+                    all_data_list = self.g_service.worksheet.get_all_values()
+                    s_data_list = []
+                    # person 은 3번째 컬럼의 데이터
+                    for item in all_data_list:
+                        if item[2] == person:
+                            s_data_list.append(item)
+                    # s_data_list = self.g_service.worksheet.findall(person)
                     print(len(s_data_list))
-                    for cell in s_data_list:
-                        print(type(self.g_service.worksheet.acell(f'A{cell.row}').value), self.g_service.worksheet.acell(f'A{cell.row}').value)
+                    item_wk_goal = int(goal)*60*60
                     # weekday : mon(0) ~ sun(6)
                     today_weekday = datetime.today().weekday()
                     if today_weekday > 0:
                         # 기존 데이터 체크..
-                        for cell in s_data_list:
-                            print(cell)
-                            # self.g_service.worksheet.acell(f'A{row_num}').value
-                            # entry 기준 체크.
-                            entry = self.g_service.worksheet.acell(f'A{cell.row}').value
-                            print(entry)
-                        data.append(int(goal)*60*60)               # (4) goal
-                    else:
-                        data.append(int(goal)*60*60)               # (4) goal
+                        for item in s_data_list:
+                            print(item)
+                            # entry 데이터는 첫번째 컬럼의 데이터
+                            start_week = datetime.now() - timedelta(days=today_weekday)
+                            if '-' in item[0]:
+                                # data 포맷이 날짜 형식
+                                if item[0] > start_week.strftime("%Y-%m-%d 00:00:00"):
+                                    item_wk_goal = int(item[4])*60*60
+                            else:
+                                # timestamp 포맷
+                                # TODO: timestamp.. 찾기
+                                if item[0] > datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d 00:00:00").timetuple():
+                                    item_wk_goal = int(item[4])*60*60
+
+                    data.append(item_wk_goal)               # (4) goal
 
                 ###################
 
@@ -199,3 +212,8 @@ class DiscordManager(discord.Client):
         # 차트 전송 참고: https://quickchart.io/documentation/send-charts-discord-bot/
         if '리포트' in message.content:
             await message.channel.send("리포트다")
+
+# test
+if __name__ == '__main__':
+    chk = datetime.now() - timedelta(days=3)
+    print(chk.strftime("%Y-%m-%d 00:00:00"))

@@ -91,10 +91,12 @@ if __name__ == '__main__':
     g_test.ready()
     g_test.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'goal'])
     # get all values
-    # list_of_lists = g_test.worksheet.get_all_values()
-    # print(list_of_lists)
+    list_of_lists = g_test.worksheet.get_all_values()
+    print(len(list_of_lists), list_of_lists)
 
     # get find cell
-    cell_list = g_test.worksheet.findall("sudole#0")
-    print(cell_list)
+    # cell_list = g_test.worksheet.findall("sudole#0")
+    # print(cell_list)
     # print(cell, cell.row, cell.col, cell.value)
+
+

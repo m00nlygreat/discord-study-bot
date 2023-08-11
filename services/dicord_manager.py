@@ -108,13 +108,13 @@ class DiscordManager(discord.Client):
                             if '-' in entry:
                                 # data 포맷이 날짜 형식
                                 if item[0] > start_week.strftime("%Y-%m-%d 00:00:00"):
-                                    item_wk_goal = int(item[4])*60*60
+                                    item_wk_goal = int(item[4])
                             else:
                                 if type(entry) == str:
                                     entry = float(entry)
                                 # timestamp 포맷
                                 if entry > time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple()):
-                                    item_wk_goal = int(item[4])*60*60
+                                    item_wk_goal = int(item[4])
 
                     data.append(item_wk_goal)               # (4) goal
 

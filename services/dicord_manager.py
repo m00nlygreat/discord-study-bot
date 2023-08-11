@@ -109,8 +109,7 @@ class DiscordManager(discord.Client):
                                     item_wk_goal = int(item[4])*60*60
                             else:
                                 # timestamp 포맷
-                                # TODO: timestamp.. 찾기
-                                if item[0] > datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d 00:00:00").timetuple():
+                                if item[0] > time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple()):
                                     item_wk_goal = int(item[4])*60*60
 
                     data.append(item_wk_goal)               # (4) goal

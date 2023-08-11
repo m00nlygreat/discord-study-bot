@@ -251,7 +251,7 @@ class DiscordManager(discord.Client):
         
             # user 데이터 정리
             u_data_list = []
-            is len(s_data_list) > 0:
+            if len(s_data_list) > 0:
                 u_data_list.append(s_data_list[0])
             
                 for item in s_data_list[1:]:

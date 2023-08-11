@@ -252,13 +252,13 @@ class DiscordManager(discord.Client):
         
             for item in s_data_list[1:]:
                 user = item[2]
-                time = 0
+                study_time = 0
                 for u_data in u_data_list:
                     if u_data[2] == user:
-                        time = u_data[3] + time
-                        u_data[3] = time
-                if time == 0:
-                    u_data_list.append(item)
+                        study_time = u_data[3] + study_time
+                        u_data[3] = study_time
+                if study_time == 0:
+                    u_data_list.append(study_time)
         
             print('-'*20)
             print(u_data_list)

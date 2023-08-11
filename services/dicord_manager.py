@@ -259,7 +259,7 @@ class DiscordManager(discord.Client):
                     study_time = 0
                     for u_data in u_data_list:
                         if u_data[2] == user:
-                            study_time = u_data[3] + study_time
+                            study_time = int(u_data[3]) + study_time
                             u_data[3] = study_time
                     if study_time == 0:
                         u_data_list.append(study_time)

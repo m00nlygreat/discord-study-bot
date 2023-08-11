@@ -251,18 +251,19 @@ class DiscordManager(discord.Client):
         
             # user 데이터 정리
             u_data_list = []
-            u_data_list.append(s_data_list[0])
-        
-            for item in s_data_list[1:]:
-                user = item[2]
-                study_time = 0
-                for u_data in u_data_list:
-                    if u_data[2] == user:
-                        study_time = u_data[3] + study_time
-                        u_data[3] = study_time
-                if study_time == 0:
-                    u_data_list.append(study_time)
-        
+            is len(s_data_list) > 0:
+                u_data_list.append(s_data_list[0])
+            
+                for item in s_data_list[1:]:
+                    user = item[2]
+                    study_time = 0
+                    for u_data in u_data_list:
+                        if u_data[2] == user:
+                            study_time = u_data[3] + study_time
+                            u_data[3] = study_time
+                    if study_time == 0:
+                        u_data_list.append(study_time)
+            
             print('-'*20)
             print(u_data_list)
             print('-'*20)

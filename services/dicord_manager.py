@@ -241,6 +241,7 @@ class DiscordManager(discord.Client):
                 else:
                     start_week_ts = time.mktime(datetime.strptime(start_week, "%Y-%m-%d %H:%M:%S").timetuple())
                     end_week_ts = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
+                    print(type(item[0]), item[0])
                     entry = float(item[0])
                     if start_week_ts < entry and entry < end_week_ts:
                         s_data_list.append(item)

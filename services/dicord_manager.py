@@ -220,7 +220,7 @@ class DiscordManager(discord.Client):
             start_week = start_week.strftime("%Y-%m-%d 00:00:00")
             # start_week = time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
         
-            end_week = datetime.now()
+            end_week = datetime.now() + timedelta(days=1)
             # end_week = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
         
             print(type(start_week), start_week, type(end_week), end_week)

@@ -268,7 +268,7 @@ class DiscordManager(discord.Client):
             str_message = '-'*20 + '\n'
         
             for u_data in u_data_list:
-                str_message = str_message + u_data[2] + ':' get_progressbar(u_data[3], u_data[4]) + '\n' + f'({u_data[3]} / {u_data[4]}, {get_percentage_working_time(u_data[3], u_data[4])}%) \n'
+                str_message = str_message + u_data[2] + ':' + get_progressbar(u_data[3], u_data[4]) + '\n' + f'({u_data[3]} / {u_data[4]}, {get_percentage_working_time(u_data[3], u_data[4])}%) \n'
         
             str_message = str_message + '-'*20 + '\n'
             await message.channel.send(str_message)

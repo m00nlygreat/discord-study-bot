@@ -235,9 +235,8 @@ class DiscordManager(discord.Client):
         
             # person 은 3번째 컬럼의 데이터
             for item in all_data_list:
-                if '-' in item[0]:
-                    if start_week < item[0] and item[0] < end_week:
-                        s_data_list.append(item)
+                if '-' in item[0] and start_week < item[0] and item[0] < end_week:
+                    s_data_list.append(item)
                 else:
                     start_week_ts = time.mktime(datetime.strptime(start_week, "%Y-%m-%d %H:%M:%S").timetuple())
                     end_week_ts = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())

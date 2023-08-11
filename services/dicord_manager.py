@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timedelta, timezone
 
 from config import CHANNEL_NAME, VOICE_ROOM_NAME
-from services.utils import get_attendance, get_time_interval, get_date_from_str
+from services.utils import get_attendance, get_time_interval, get_date_from_str, get_progressbar, get_percentage_working_time
 from services.g_sheet_manager import GSpreadService
 
 DS_CHANNEL_NAME = os.environ.get('CHANNEL_NAME')
@@ -214,7 +214,64 @@ class DiscordManager(discord.Client):
         # 리포트 전송
         # 차트 전송 참고: https://quickchart.io/documentation/send-charts-discord-bot/
         if '리포트' in message.content:
-            await message.channel.send("리포트다")
+            # 조회 기간은 월 ~ 다음날 00시 까지
+            today_weekday = datetime.today().weekday()
+            start_week = datetime.now() - timedelta(days=today_weekday)
+            start_week = start_week.strftime("%Y-%m-%d 00:00:00")
+            # start_week = time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
+        
+            end_week = datetime.now()
+            # end_week = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
+        
+            print(type(start_week), start_week, type(end_week), end_week)
+        
+        
+            # sheet 설정
+            self.g_service.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'weekly_goal'])
+        
+            # 조회 기간에 해당되는 데이터 취합
+            all_data_list = self.g_service.worksheet.get_all_values()
+            s_data_list = []
+        
+            # person 은 3번째 컬럼의 데이터
+            for item in all_data_list:
+                if '-' in item[0]:
+                    if start_week < item[0] and item[0] < end_week:
+                        s_data_list.append(item)
+                else:
+                    start_week_ts = time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
+                    end_week_ts = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
+                    entry = float(item[0])
+                    if start_week_ts < entry and entry < end_week_ts:
+                        s_data_list.append(item)
+        
+        
+            # user 데이터 정리
+            u_data_list = []
+            u_data_list.append(s_data_list[0])
+        
+            for item in s_data_list[1:]:
+                user = item[2]
+                time = 0
+                for u_data in u_data_list:
+                    if u_data[2] == user:
+                        time = u_data[3] + time
+                        u_data[3] = time
+                if time == 0:
+                    u_data_list.append(item)
+        
+            print('-'*20)
+            print(u_data_list)
+            print('-'*20)
+        
+            # 전송 메시지 포맷 정리
+            str_message = '-'*20 + '\n'
+        
+            for u_data in u_data_list:
+                str_message = str_message + u_data[2] + ':' get_progressbar(u_data[3], u_data[4]) + '\n' + f'({u_data[3]} / {u_data[4]}, {get_percentage_working_time(u_data[3], u_data[4])}%) \n'
+        
+            str_message = str_message + '-'*20 + '\n'
+            await message.channel.send(str_message)
 
 # test
 if __name__ == '__main__':

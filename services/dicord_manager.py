@@ -1,9 +1,10 @@
 import discord
 import os
+import time
 from datetime import datetime, timedelta, timezone
 
 from config import CHANNEL_NAME, VOICE_ROOM_NAME
-from services.utils import get_attendance, get_time_interval, get_date_from_str
+from services.utils import get_attendance, get_time_interval, get_date_from_str, get_progressbar, get_percentage_working_time
 from services.g_sheet_manager import GSpreadService
 
 DS_CHANNEL_NAME = os.environ.get('CHANNEL_NAME')
@@ -77,12 +78,51 @@ class DiscordManager(discord.Client):
                     cell = u_data_list[0]
                     row_num = cell.row
                     goal = self.g_service.worksheet.acell(f'C{row_num}').value
-                    data.append(int(goal)*60*60)               # (4) goal
+
+                    # sheet 변경
+                    self.g_service.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'weekly_goal'])
+                    # 멤버 업데이트 후 현재 날짜의 요일 확인
+                    # sessions 사용자의 데이터들 중 같은 주가 데이터 수집
+
+
+                    # 기존 데이터가 있는 경우 유지..
+                    # 없는 경우 ..?
+                    all_data_list = self.g_service.worksheet.get_all_values()
+                    s_data_list = []
+                    # person 은 3번째 컬럼의 데이터
+                    for item in all_data_list:
+                        if item[2] == person:
+                            s_data_list.append(item)
+                    # s_data_list = self.g_service.worksheet.findall(person)
+                    print(len(s_data_list))
+                    item_wk_goal = int(goal)*60*60
+                    # weekday : mon(0) ~ sun(6)
+                    today_weekday = datetime.today().weekday()
+                    if today_weekday > 0:
+                        # 기존 데이터 체크..
+                        for item in s_data_list:
+                            print(item)
+                            # entry 데이터는 첫번째 컬럼의 데이터
+                            start_week = datetime.now() - timedelta(days=today_weekday)
+                            entry = item[0]                            
+                            if '-' in entry:
+                                # data 포맷이 날짜 형식
+                                if item[0] > start_week.strftime("%Y-%m-%d 00:00:00"):
+                                    item_wk_goal = int(item[4])
+                            else:
+                                if type(entry) == str:
+                                    entry = float(entry)
+                                # timestamp 포맷
+                                if entry > time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple()):
+                                    item_wk_goal = int(item[4])
+
+                    data.append(item_wk_goal)               # (4) goal
+
                 ###################
 
                 # add data > 출석 데이터는 무조건 add
                 # print(data)
-                self.g_service.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'weekly_goal'])
+
                 self.g_service.add_row(data)
             elif enter_type == 'leave':
                 # print('[DEBUG] Event type is LEAVE')
@@ -114,6 +154,16 @@ class DiscordManager(discord.Client):
                                 self.g_service.worksheet.update(f'D{row_num}',
                                                                 get_time_interval(entry, now, "%Y-%m-%d %H:%M:%S"))
                                 return False
+
+
+                # 멤버 업데이트 후 현재 날짜의 요일 확인
+                # sessions 사용자의 데이터들 중 같은 주가 데이터 수집
+                # 기존 데이터가 있는 경우 유지..
+                # 없는 경우 ..?
+
+                # weekday : mon(0) ~ sun(6)
+                # today_weekday = datetime.today().weekday()
+                # if today_weekday > 0:
 
     async def on_message(self, message):
         debug_now = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S")
@@ -161,3 +211,73 @@ class DiscordManager(discord.Client):
             # else:
             #     answer = get_answer(message.content)
             #     await message.channel.send(answer)
+        # 리포트 전송
+        # 차트 전송 참고: https://quickchart.io/documentation/send-charts-discord-bot/
+        if '리포트' in message.content:
+            # 조회 기간은 월 ~ 다음날 00시 까지
+            today_weekday = datetime.today().weekday()
+            start_week = datetime.now() - timedelta(days=today_weekday)
+            start_week = start_week.strftime("%Y-%m-%d 00:00:00")
+            # start_week = time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
+        
+            end_week = datetime.now() + timedelta(days=1)
+            # end_week = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
+        
+            print(type(start_week), start_week, type(end_week), end_week)
+        
+        
+            # sheet 설정
+            self.g_service.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'weekly_goal'])
+        
+            # 조회 기간에 해당되는 데이터 취합
+            all_data_list = self.g_service.worksheet.get_all_values()
+            s_data_list = []
+        
+            # person 은 3번째 컬럼의 데이터
+            for item in all_data_list:
+                if '-' in item[0]:
+                    if start_week < item[0] and item[0] < end_week:
+                        s_data_list.append(item)
+                else:
+                    start_week_ts = time.mktime(datetime.strptime(start_week, "%Y-%m-%d %H:%M:%S").timetuple())
+                    end_week_ts = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
+                    print(type(item[0]), item[0], start_week_ts, end_week_ts)
+                    try:
+                        entry = float(item[0])
+                        if start_week_ts < entry and entry < end_week_ts:
+                            s_data_list.append(item)
+                    except:
+                        print('Exception !')
+        
+            # user 데이터 정리
+            u_data_list = []
+            if len(s_data_list) > 0:
+                u_data_list.append(s_data_list[0])
+            
+                for item in s_data_list[1:]:
+                    user = item[2]
+                    study_time = 0
+                    for u_data in u_data_list:
+                        if u_data[2] == user:
+                            study_time = int(u_data[3]) + study_time
+                            u_data[3] = study_time
+                    if study_time == 0:
+                        u_data_list.append(study_time)
+            
+            print('-'*20)
+            print(u_data_list)
+            print('-'*20)
+        
+            # 전송 메시지 포맷 정리
+            str_message = '-'*20 + '\n'
+        
+            for u_data in u_data_list:
+                str_message = str_message + u_data[2] + ':' + get_progressbar(u_data[3], u_data[4]) + '\n' + f'({u_data[3]} / {u_data[4]}, {get_percentage_working_time(u_data[3], u_data[4])}%) \n'
+        
+            str_message = str_message + '-'*20 + '\n'
+            await message.channel.send(str_message)
+
+# test
+if __name__ == '__main__':
+    chk = datetime.now() - timedelta(days=3)
+    print(chk.strftime("%Y-%m-%d 00:00:00"))

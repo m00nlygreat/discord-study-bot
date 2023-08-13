@@ -89,3 +89,13 @@ def get_attendance(attendance, concentration_time):
 
     result += '='*30
     return result
+
+def get_percentage_working_time(curr, total):
+    return float(curr) / float(total) * 100
+
+def get_progressbar(curr, total):
+    percent = get_percentage_working_time(curr, total)
+    empty_square = '□'*10
+    full_square = '■'*10
+
+    return full_square[:int(percent/10)] + empty_square[int(percent/10):]

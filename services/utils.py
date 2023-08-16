@@ -99,7 +99,7 @@ def get_progressbar(curr, total):
     empty_square = '□'*20
     full_square = '■'*20
 
-    return full_square[:int(percent/10)] + empty_square[int(percent/10):]
+    return full_square[:int(percent*0.2)] + empty_square[int(percent*0.2):]
 
 def get_user_stat(user_name, curr, total):
     BACKTICKS_LINE = '```\n'

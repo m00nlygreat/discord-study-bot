@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timedelta, timezone
 
 from config import CHANNEL_NAME, VOICE_ROOM_NAME
-from services.utils import get_attendance, get_time_interval, get_date_from_str, get_progressbar, get_percentage_working_time
+from services.utils import get_attendance, get_time_interval, get_date_from_str, get_progressbar, get_percentage_working_time, get_user_stat
 from services.g_sheet_manager import GSpreadService
 
 DS_CHANNEL_NAME = os.environ.get('CHANNEL_NAME')
@@ -268,13 +268,17 @@ class DiscordManager(discord.Client):
             print(u_data_list)
             print('-'*20)
         
-            # 전송 메시지 포맷 정리
-            str_message = '-'*20 + '\n'
-        
+            # 리포트 텍스트 포맷 변경
+            str_message = '주간 참여 리포트\n'
+            ## sheet 변경 sessions > members
+            self.g_service.set_worksheet_by_name('members', ['id', 'name', 'goal'])
+            
             for u_data in u_data_list:
-                str_message = str_message + u_data[2] + ':' + get_progressbar(u_data[3], u_data[4]) + '\n' + f'({u_data[3]} / {u_data[4]}, {get_percentage_working_time(u_data[3], u_data[4])}%) \n'
+                members = self.g_service.worksheet.findall(u_data[2])
+                if len(members) > 0:
+                    member = members[0]
+                    str_message = str_message + get_user_stat(member[0] if member[1] == '' else member[1], u_data[3], u_data[4])
         
-            str_message = str_message + '-'*20 + '\n'
             await message.channel.send(str_message)
 
 # test

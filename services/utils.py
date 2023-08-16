@@ -91,11 +91,20 @@ def get_attendance(attendance, concentration_time):
     return result
 
 def get_percentage_working_time(curr, total):
-    return float(curr) / float(total) * 100
+    # 반올림, 자리수 소수점 1번째까지.
+    return round(float(curr) / float(total) * 100, 0)
 
 def get_progressbar(curr, total):
     percent = get_percentage_working_time(curr, total)
-    empty_square = '□'*10
-    full_square = '■'*10
+    empty_square = '□'*20
+    full_square = '■'*20
 
     return full_square[:int(percent/10)] + empty_square[int(percent/10):]
+
+def get_user_stat(user_name, curr, total):
+    BACKTICKS_LINE = '```\n'
+    return BACKTICKS_LINE + \
+        user_name + \
+        get_progressbar(curr, total) + get_percentage_working_time(curr, total) + '\n' + \
+        str(int(curr/60/60)) + ' / ' + str(int(total/60/60)) + '시간\n' + \
+        BACKTICKS_LINE

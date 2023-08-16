@@ -190,7 +190,7 @@ class DiscordManager(discord.Client):
             user_goal = int(message.content.replace("!t", ""))
             user = message.author
             person = f'{user.name}#{user.discriminator}' if user.discriminator != 0 else user.name
-            nick_name = '' if message.author.nick is None else message.author.nick
+            nick_name = message.author.global_name if message.author.nick is None else message.author.nick
             u_data_list = self.g_service.worksheet.findall(person)
 
             if len(u_data_list) == 0:

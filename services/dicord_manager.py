@@ -305,10 +305,11 @@ class DiscordManager(discord.Client):
                 for item in s_data_list[1:]:
                     user = item[2]
                     study_time = 0
-                    for u_data in u_data_list:
+                    for idx, u_data in enumerate(u_data_list):
                         if u_data[2] == user:
                             study_time = int(u_data[3]) + study_time
                             u_data[3] = study_time
+                            u_data_list[idx] = u_data
                     if study_time == 0:
                         u_data_list.append(study_time)
             

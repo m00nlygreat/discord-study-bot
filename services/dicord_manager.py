@@ -289,7 +289,7 @@ class DiscordManager(discord.Client):
                 else:
                     start_week_ts = time.mktime(datetime.strptime(start_week, "%Y-%m-%d %H:%M:%S").timetuple())
                     end_week_ts = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
-                    print(type(item[0]), item[0], start_week_ts, end_week_ts)
+                    # print(type(item[0]), item[0], start_week_ts, end_week_ts)
                     try:
                         entry = float(item[0])
                         if start_week_ts < entry and entry < end_week_ts:
@@ -306,9 +306,11 @@ class DiscordManager(discord.Client):
                     user = item[2]
                     study_time = 0
                     for idx, u_data in enumerate(u_data_list):
+                        print(f'[DEBUG] {u_data[2]} , {user}  ')
                         if u_data[2] == user:
                             study_time = int(u_data[3]) + study_time
                             u_data[3] = study_time
+                            print(f'[DEBUG] --> index : {idx}')
                             u_data_list[idx] = u_data
                     if study_time == 0:
                         u_data_list.append(study_time)

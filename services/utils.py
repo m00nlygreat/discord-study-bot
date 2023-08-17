@@ -108,8 +108,9 @@ def get_user_stat(user_name, curr, total):
         curr = int(curr)
     if type(total) == str:
         total = int(total)
+    print(f'[DEBIG] >> curr : {curr}, total : {total} ')
     return BACKTICKS_LINE + \
-        user_name + \
+        user_name + '\n' + \
         get_progressbar(curr, total) + ' ' + str(get_percentage_working_time(curr, total)) + '%\n' + \
         str(int(curr/60/60)) + ' / ' + str(int(total/60/60)) + '시간\n' + \
         BACKTICKS_LINE

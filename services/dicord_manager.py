@@ -298,25 +298,25 @@ class DiscordManager(discord.Client):
                         print('Exception !')
         
             # user 데이터 정리
-            u_data_list = []
+            report_data = []
             if len(s_data_list) > 0:
-                u_data_list.append(s_data_list[0])
+                report_data.append(s_data_list[0])
             
+                study_time = 0
                 for item in s_data_list[1:]:
                     user = item[2]
-                    study_time = 0
-                    for idx, u_data in enumerate(u_data_list):
+                    for idx, u_data in enumerate(report_data):
                         print(f'[DEBUG] {u_data[2]} , {user}  ')
                         if u_data[2] == user:
                             study_time = int(u_data[3]) + study_time
                             u_data[3] = study_time
-                            print(f'[DEBUG] --> index : {idx} , time --> {study_time}')
-                            u_data_list[idx] = u_data
+                            print(f'[DEBUG] --> index : {idx}')
+                            report_data[idx] = u_data
                     if study_time == 0:
-                        u_data_list.append(study_time)
+                        report_data.append(study_time)
             
             print('-'*20)
-            print(u_data_list)
+            print(report_data)
             print('-'*20)
         
             # 리포트 텍스트 포맷 변경
@@ -324,7 +324,7 @@ class DiscordManager(discord.Client):
             ## sheet 변경 sessions > members
             self.g_service.set_worksheet_by_name('members', ['id', 'name', 'goal'])
             
-            for u_data in u_data_list:
+            for u_data in report_data:
                 members = self.g_service.worksheet.findall(u_data[2])
                 if len(members) > 0:
                     cell = members[0]

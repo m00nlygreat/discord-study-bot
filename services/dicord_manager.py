@@ -123,6 +123,9 @@ class DiscordManager(discord.Client):
                 # add data > 출석 데이터는 무조건 add
                 # print(data)
 
+                # 데이터 추가 전 sheet 변경
+                self.g_service.set_worksheet_by_name('sessions', ['entry', 'leave', 'person', 'duration', 'weekly_goal'])
+                
                 self.g_service.add_row(data)
             elif enter_type == 'leave':
                 # print('[DEBUG] Event type is LEAVE')

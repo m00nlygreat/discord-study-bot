@@ -306,19 +306,19 @@ class DiscordManager(discord.Client):
                 for item in s_data_list[1:]:
                     user = item[2]
                     for idx, u_data in enumerate(report_data):
-                        print(f'[DEBUG] {u_data[2]} , {user}  ')
+                        # print(f'[DEBUG] {u_data[2]} , {user}  ')
                         if u_data[2] == user:
                             study_time = int(u_data[3]) + study_time
                             u_data[3] = study_time
-                            print(f'[DEBUG] --> index : {idx}, {study_time}')
+                            # print(f'[DEBUG] --> index : {idx}, {study_time}')
                             report_data[idx] = u_data
                     if study_time == 0:
                         report_data.append(study_time)
-            
+            '''
             print('-'*20)
             print(report_data)
             print('-'*20)
-        
+            '''
             # 리포트 텍스트 포맷 변경
             str_message = '주간 참여 리포트\n'
             ## sheet 변경 sessions > members

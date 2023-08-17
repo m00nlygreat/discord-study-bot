@@ -4,7 +4,7 @@ import time
 from datetime import datetime, timedelta, timezone
 
 from config import CHANNEL_NAME, VOICE_ROOM_NAME
-from services.utils import get_attendance, get_time_interval, get_date_from_str, get_progressbar, get_percentage_working_time
+from services.utils import get_attendance, get_time_interval, get_date_from_str, get_progressbar, get_percentage_working_time, get_user_stat
 from services.g_sheet_manager import GSpreadService
 
 DS_CHANNEL_NAME = os.environ.get('CHANNEL_NAME')
@@ -190,7 +190,55 @@ class DiscordManager(discord.Client):
             user_goal = int(message.content.replace("!t", ""))
             user = message.author
             person = f'{user.name}#{user.discriminator}' if user.discriminator != 0 else user.name
-            nick_name = '' if message.author.nick is None else message.author.nick
+            nick_name = message.author.global_name if message.author.nick is None else message.author.nick
+            u_data_list = self.g_service.worksheet.findall(person)
+
+            if len(u_data_list) == 0:
+                data = list()
+                data.append(person)             # (0) person
+                data.append(nick_name)          # (1) name
+                data.append(user_goal)          # (2) goal
+                self.g_service.add_row(data)
+            else:
+                cell = u_data_list[0]
+                row_num = cell.row
+                # update goal data
+                self.g_service.worksheet.update(f'C{row_num}', user_goal)
+                self.g_service.worksheet.update(f'B{row_num}', nick_name)
+
+            await message.add_reaction('👍')
+            # 알수 없는 대답 일단 주석 처리
+            # else:
+            #     answer = get_answer(message.content)
+            #     await message.channel.send(answer)
+        # 리포트 전송
+        # 차트 전송 참고: https://quickchart.io/documentation/send-charts-discord-bot/
+    async def on_message(self, message):
+        debug_now = datetime.now(timezone(timedelta(hours=9))).strftime("%Y-%m-%d %H:%M:%S")
+        print(f'{debug_now} [DEBUG] on_message', message)
+        # print(f'[DEBUG] Catch message event: [{message.author}]')
+        # 봇 이벤트 인 경우 종료
+        if message.author == self.user:
+            return
+        # 설정된 채널인 경우만 아래 로직 수행
+        if message.channel.name == DS_CHANNEL_NAME or message.channel.name == CHANNEL_NAME:
+            # 핑 테스트 용
+            if message.content == 'ping':
+                await message.channel.send('pong {0.author.mention}'.format(message))
+            # 출석/마무리는 리액션만 처리
+            elif '출석' in message.content or '출첵' in message.content or '마무리' in message.content:
+                await message.add_reaction('👍')
+            elif '현황' in message.content or '조회' in message.content:
+                answer = get_attendance(self.attendance, self.concentration_time)
+                await message.channel.send(answer)
+        # 목표 시간 등록 > !t{n} ex) !t3 : 3시간 목표
+        if '!t' in message.content:
+            self.g_service.set_worksheet_by_name('members', ['id', 'name', 'goal'])
+
+            user_goal = int(message.content.replace("!t", ""))
+            user = message.author
+            person = f'{user.name}#{user.discriminator}' if user.discriminator != 0 else user.name
+            nick_name = message.author.global_name if message.author.nick is None else message.author.nick
             u_data_list = self.g_service.worksheet.findall(person)
 
             if len(u_data_list) == 0:
@@ -241,7 +289,7 @@ class DiscordManager(discord.Client):
                 else:
                     start_week_ts = time.mktime(datetime.strptime(start_week, "%Y-%m-%d %H:%M:%S").timetuple())
                     end_week_ts = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
-                    print(type(item[0]), item[0], start_week_ts, end_week_ts)
+                    # print(type(item[0]), item[0], start_week_ts, end_week_ts)
                     try:
                         entry = float(item[0])
                         if start_week_ts < entry and entry < end_week_ts:
@@ -250,31 +298,39 @@ class DiscordManager(discord.Client):
                         print('Exception !')
         
             # user 데이터 정리
-            u_data_list = []
+            report_data = []
             if len(s_data_list) > 0:
-                u_data_list.append(s_data_list[0])
+                report_data.append(s_data_list[0])
             
+                study_time = 0
                 for item in s_data_list[1:]:
                     user = item[2]
-                    study_time = 0
-                    for u_data in u_data_list:
+                    for idx, u_data in enumerate(report_data):
+                        # print(f'[DEBUG] {u_data[2]} , {user}  ')
                         if u_data[2] == user:
                             study_time = int(u_data[3]) + study_time
                             u_data[3] = study_time
+                            # print(f'[DEBUG] --> index : {idx}, {study_time}')
+                            report_data[idx] = u_data
                     if study_time == 0:
-                        u_data_list.append(study_time)
+                        report_data.append(study_time)
+            '''
+            print('-'*20)
+            print(report_data)
+            print('-'*20)
+            '''
+            # 리포트 텍스트 포맷 변경
+            str_message = '주간 참여 리포트\n'
+            ## sheet 변경 sessions > members
+            self.g_service.set_worksheet_by_name('members', ['id', 'name', 'goal'])
             
-            print('-'*20)
-            print(u_data_list)
-            print('-'*20)
+            for u_data in report_data:
+                members = self.g_service.worksheet.findall(u_data[2])
+                if len(members) > 0:
+                    cell = members[0]
+                    name = self.g_service.worksheet.acell(f'B{cell.row}').value
+                    str_message = str_message + get_user_stat(u_data[2] if name == '' else name, u_data[3], u_data[4])
         
-            # 전송 메시지 포맷 정리
-            str_message = '-'*20 + '\n'
-        
-            for u_data in u_data_list:
-                str_message = str_message + u_data[2] + ':' + get_progressbar(u_data[3], u_data[4]) + '\n' + f'({u_data[3]} / {u_data[4]}, {get_percentage_working_time(u_data[3], u_data[4])}%) \n'
-        
-            str_message = str_message + '-'*20 + '\n'
             await message.channel.send(str_message)
 
 # test

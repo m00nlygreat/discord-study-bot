@@ -110,6 +110,6 @@ def get_user_stat(user_name, curr, total):
         total = int(total)
     return BACKTICKS_LINE + \
         user_name + \
-        get_progressbar(curr, total) + str(get_percentage_working_time(curr, total)) + '\n' + \
+        get_progressbar(curr, total) + ' ' + str(get_percentage_working_time(curr, total)) + '%\n' + \
         str(int(curr/60/60)) + ' / ' + str(int(total/60/60)) + '시간\n' + \
         BACKTICKS_LINE

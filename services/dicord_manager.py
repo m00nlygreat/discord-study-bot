@@ -310,7 +310,7 @@ class DiscordManager(discord.Client):
                         if u_data[2] == user:
                             study_time = int(u_data[3]) + study_time
                             u_data[3] = study_time
-                            print(f'[DEBUG] --> index : {idx}')
+                            print(f'[DEBUG] --> index : {idx} , time --> {study_time}')
                             u_data_list[idx] = u_data
                     if study_time == 0:
                         u_data_list.append(study_time)

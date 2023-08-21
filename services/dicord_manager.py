@@ -299,7 +299,6 @@ class DiscordManager(discord.Client):
                             s_data_list.append(item)
                     except:
                         print('Exception !')
-        
             # user 데이터 정리
             report_data = []
             if len(s_data_list) > 0:
@@ -307,6 +306,7 @@ class DiscordManager(discord.Client):
             
                 is_include = True
                 for item in s_data_list[1:]:
+                    is_include = True
                     user = item[2]
                     for idx, u_data in enumerate(report_data):
                         # print(f'[DEBUG] {item}, {u_data}, {user}  ')
@@ -319,7 +319,6 @@ class DiscordManager(discord.Client):
                     
                     if is_include:
                         report_data.append(item)
-                        is_include = True
             
             print('-'*20)
             print(report_data)

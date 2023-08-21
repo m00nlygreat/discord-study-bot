@@ -309,7 +309,7 @@ class DiscordManager(discord.Client):
                 for item in s_data_list[1:]:
                     user = item[2]
                     for idx, u_data in enumerate(report_data):
-                        print(f'[DEBUG] {item}, {u_data}, {user}  ')
+                        # print(f'[DEBUG] {item}, {u_data}, {user}  ')
                         if u_data[2] == user and item[3] != '':
                             study_time = int(u_data[3]) + int(item[3])
                             u_data[3] = study_time
@@ -320,11 +320,11 @@ class DiscordManager(discord.Client):
                     if is_include:
                         report_data.append(item)
                         is_include = True
-            '''
+            
             print('-'*20)
             print(report_data)
             print('-'*20)
-            '''
+            
             # 리포트 텍스트 포맷 변경
             str_message = '주간 참여 리포트\n'
             ## sheet 변경 sessions > members
@@ -332,7 +332,7 @@ class DiscordManager(discord.Client):
             
             for u_data in report_data:
                 members = self.g_service.worksheet.findall(u_data[2])
-                print(f'[DEBUG] members >> {members}')
+                # print(f'[DEBUG] members >> {members}')
                 if len(members) > 0:
                     cell = members[0]
                     name = self.g_service.worksheet.acell(f'B{cell.row}').value

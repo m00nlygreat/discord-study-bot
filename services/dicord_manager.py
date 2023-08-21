@@ -264,7 +264,7 @@ class DiscordManager(discord.Client):
             #     await message.channel.send(answer)
         # 리포트 전송
         # 차트 전송 참고: https://quickchart.io/documentation/send-charts-discord-bot/
-        if '리포트' in message.content:
+        if '!리포트' in message.content:
             # 조회 기간은 월 ~ 다음날 00시 까지
             today_weekday = datetime.today().weekday()
             start_week = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=today_weekday)

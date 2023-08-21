@@ -315,6 +315,7 @@ class DiscordManager(discord.Client):
                             u_data[3] = study_time
                             # print(f'[DEBUG] --> index : {idx}, {study_time}')
                             report_data[idx] = u_data
+                            study_time = 0
                     if study_time == 0:
                         report_data.append(item)
             '''

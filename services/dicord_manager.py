@@ -305,7 +305,7 @@ class DiscordManager(discord.Client):
             if len(s_data_list) > 0:
                 report_data.append(s_data_list[0])
             
-                is_include = False
+                is_include = True
                 for item in s_data_list[1:]:
                     user = item[2]
                     for idx, u_data in enumerate(report_data):
@@ -315,11 +315,11 @@ class DiscordManager(discord.Client):
                             u_data[3] = study_time
                             # print(f'[DEBUG] --> index : {idx}, {study_time}')
                             report_data[idx] = u_data
-                            is_include = True
+                            is_include = False
                     
                     if is_include:
                         report_data.append(item)
-                        is_include = False
+                        is_include = True
             '''
             print('-'*20)
             print(report_data)

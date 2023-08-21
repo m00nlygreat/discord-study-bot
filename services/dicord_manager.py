@@ -103,7 +103,7 @@ class DiscordManager(discord.Client):
                         for item in s_data_list:
                             print(item)
                             # entry 데이터는 첫번째 컬럼의 데이터
-                            start_week = datetime.now() - timedelta(days=today_weekday)
+                            start_week = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=today_weekday)
                             entry = item[0]                            
                             if '-' in entry:
                                 # data 포맷이 날짜 형식
@@ -267,11 +267,11 @@ class DiscordManager(discord.Client):
         if '리포트' in message.content:
             # 조회 기간은 월 ~ 다음날 00시 까지
             today_weekday = datetime.today().weekday()
-            start_week = datetime.now() - timedelta(days=today_weekday)
+            start_week = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=today_weekday)
             start_week = start_week.strftime("%Y-%m-%d 00:00:00")
             # start_week = time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
         
-            end_week = datetime.now() + timedelta(days=1)
+            end_week = datetime.now(timezone(timedelta(hours=9))) + timedelta(days=1)
             # end_week = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
         
             print(type(start_week), start_week, type(end_week), end_week)
@@ -316,7 +316,7 @@ class DiscordManager(discord.Client):
                             # print(f'[DEBUG] --> index : {idx}, {study_time}')
                             report_data[idx] = u_data
                     if study_time == 0:
-                        report_data.append(study_time)
+                        report_data.append(item)
             '''
             print('-'*20)
             print(report_data)

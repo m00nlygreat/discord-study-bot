@@ -316,10 +316,10 @@ class DiscordManager(discord.Client):
                             # print(f'[DEBUG] --> index : {idx}, {study_time}')
                             report_data[idx] = u_data
                             is_include = True
-                        else:
-                            is_include = False
+                    
                     if is_include:
                         report_data.append(item)
+                        is_include = False
             '''
             print('-'*20)
             print(report_data)

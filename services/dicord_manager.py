@@ -103,7 +103,7 @@ class DiscordManager(discord.Client):
                         for item in s_data_list:
                             print(item)
                             # entry 데이터는 첫번째 컬럼의 데이터
-                            start_week = datetime.now() - timedelta(days=today_weekday)
+                            start_week = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=today_weekday)
                             entry = item[0]                            
                             if '-' in entry:
                                 # data 포맷이 날짜 형식
@@ -264,14 +264,14 @@ class DiscordManager(discord.Client):
             #     await message.channel.send(answer)
         # 리포트 전송
         # 차트 전송 참고: https://quickchart.io/documentation/send-charts-discord-bot/
-        if '리포트' in message.content:
+        if '!리포트' in message.content:
             # 조회 기간은 월 ~ 다음날 00시 까지
             today_weekday = datetime.today().weekday()
-            start_week = datetime.now() - timedelta(days=today_weekday)
+            start_week = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=today_weekday)
             start_week = start_week.strftime("%Y-%m-%d 00:00:00")
             # start_week = time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
         
-            end_week = datetime.now() + timedelta(days=1)
+            end_week = datetime.now(timezone(timedelta(hours=9))) + timedelta(days=1)
             # end_week = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
         
             print(type(start_week), start_week, type(end_week), end_week)
@@ -299,29 +299,31 @@ class DiscordManager(discord.Client):
                             s_data_list.append(item)
                     except:
                         print('Exception !')
-        
             # user 데이터 정리
             report_data = []
             if len(s_data_list) > 0:
                 report_data.append(s_data_list[0])
             
-                study_time = 0
+                is_include = True
                 for item in s_data_list[1:]:
+                    is_include = True
                     user = item[2]
                     for idx, u_data in enumerate(report_data):
-                        # print(f'[DEBUG] {u_data[2]} , {user}  ')
-                        if u_data[2] == user:
-                            study_time = int(u_data[3]) + study_time
+                        # print(f'[DEBUG] {item}, {u_data}, {user}  ')
+                        if u_data[2] == user and item[3] != '':
+                            study_time = int(u_data[3]) + int(item[3])
                             u_data[3] = study_time
                             # print(f'[DEBUG] --> index : {idx}, {study_time}')
                             report_data[idx] = u_data
-                    if study_time == 0:
-                        report_data.append(study_time)
-            '''
+                            is_include = False
+                    
+                    if is_include:
+                        report_data.append(item)
+            
             print('-'*20)
             print(report_data)
             print('-'*20)
-            '''
+            
             # 리포트 텍스트 포맷 변경
             str_message = '주간 참여 리포트\n'
             ## sheet 변경 sessions > members
@@ -329,6 +331,7 @@ class DiscordManager(discord.Client):
             
             for u_data in report_data:
                 members = self.g_service.worksheet.findall(u_data[2])
+                # print(f'[DEBUG] members >> {members}')
                 if len(members) > 0:
                     cell = members[0]
                     name = self.g_service.worksheet.acell(f'B{cell.row}').value

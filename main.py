@@ -2,7 +2,7 @@ import os
 import discord
 
 from config import TOKEN
-from services.dicord_manager import DiscordManager
+from services.discord_manager import DiscordManager
 
 DISCORD_BOT_TOKEN = os.environ.get('DISCORD_BOT_TOKEN')
 

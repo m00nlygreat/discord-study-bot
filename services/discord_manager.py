@@ -276,11 +276,12 @@ class DiscordManager(discord.Client):
 
                     if is_include:
                         report_data.append(item)
-
+            '''
             print('-'*20)
             print(report_data)
             print('-'*20)
-
+            '''
+            
             # 리포트 텍스트 포맷 변경
             str_message = '주간 참여 리포트\n'
             # sheet 변경 sessions > members

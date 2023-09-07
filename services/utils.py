@@ -107,7 +107,7 @@ def get_user_stat(user_name, curr, total):
     if type(curr) == str:
         curr = int(curr)
     if type(total) == str:
-        total = int(total)
+        total = int(float(total)) if total != '' else 0
     # print(f'[DEBIG] >> curr : {curr}, total : {total} ')
     return BACKTICKS_LINE + \
         user_name + '\n' + \

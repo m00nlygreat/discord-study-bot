@@ -92,7 +92,9 @@ def get_attendance(attendance, concentration_time):
 
 def get_percentage_working_time(curr, total):
     # 반올림, 자리수 소수점 1번째까지.
-    return round(float(curr) / float(total) * 100, 0)
+    if total == 0: return 0
+    else:
+        return round(float(curr) / float(total) * 100, 0)
 
 def get_progressbar(curr, total):
     percent = get_percentage_working_time(curr, total)

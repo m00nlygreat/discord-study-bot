@@ -292,7 +292,7 @@ class DiscordManager(discord.Client):
                 if len(members) > 0:
                     cell = members[0]
                     name = self.g_service.worksheet.acell(f'B{cell.row}').value
-                    goal = self.g_service.worksheet.acell(f'C{cell.row}').value if u_data[4] == '' else u_data[4]
+                    goal = int(self.g_service.worksheet.acell(f'C{cell.row}').value)*60*60 if u_data[4] == '' else u_data[4]
                     str_message = str_message + get_user_stat(u_data[2] if name == '' else name, u_data[3], goal)
 
             await message.channel.send(str_message)

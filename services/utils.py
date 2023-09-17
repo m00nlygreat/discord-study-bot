@@ -116,3 +116,10 @@ def get_user_stat(user_name, curr, total):
         get_progressbar(curr, total) + ' ' + str(get_percentage_working_time(curr, total)) + '%\n' + \
         str(int(curr/60/60)) + ' / ' + str(int(total/60/60)) + '시간\n' + \
         BACKTICKS_LINE
+
+def find_item_in_arr(arr, item, idx):
+    result = False
+    for arr_item in arr:
+        if arr_item[idx] == item:
+            result = arr_item
+    return result

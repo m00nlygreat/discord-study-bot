@@ -290,7 +290,7 @@ class DiscordManager(discord.Client):
             for u_data in report_data:
                 members = self.g_service.worksheet.findall(u_data[2])
                 # print(f'[DEBUG] members >> {members}')
-                if len(members) > 0:
+                if len(members) > 0 and u_data[3] != '':
                     cell = members[0]
                     name = self.g_service.worksheet.acell(f'B{cell.row}').value
                     goal = int(self.g_service.worksheet.acell(f'C{cell.row}').value)*60*60 if u_data[4] == '' else u_data[4]

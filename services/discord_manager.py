@@ -267,7 +267,7 @@ class DiscordManager(discord.Client):
                     user = item[2]
                     for idx, u_data in enumerate(report_data):
                         # print(f'[DEBUG] {item}, {u_data}, {user}  ')
-                        if u_data[2] == user and item[3] != '':
+                        if u_data[2] == user and item[3] != '' and u_data[3] != '':
                             study_time = int(u_data[3]) + int(item[3])
                             u_data[3] = study_time
                             # print(f'[DEBUG] --> index : {idx}, {study_time}')

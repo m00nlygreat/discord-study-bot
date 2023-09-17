@@ -5,7 +5,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 from config import CHANNEL_NAME, VOICE_ROOM_NAME
-from services.utils import get_attendance, get_time_interval, get_date_from_str, get_user_stat
+from services.utils import get_attendance, get_time_interval, get_date_from_str, get_user_stat, find_item_in_arr
 from services.g_sheet_manager import GSpreadService
 
 DS_CHANNEL_NAME = os.environ.get('CHANNEL_NAME')
@@ -286,16 +286,20 @@ class DiscordManager(discord.Client):
             str_message = '주간 참여 리포트\n'
             # sheet 변경 sessions > members
             self.g_service.set_worksheet_by_name('members', ['id', 'name', 'goal'])
-
+            all_members = self.g_service.worksheet.get_all_values()
+            '''
+            print('-'*20)
+            print(all_members)
+            print('-'*20)
+            '''
             for u_data in report_data:
-                members = self.g_service.worksheet.findall(u_data[2])
+                members = find_item_in_arr(all_members, u_data[2], 0)
                 # print(f'[DEBUG] members >> {members}')
-                if len(members) > 0 and u_data[3] != '':
-                    cell = members[0]
-                    name = self.g_service.worksheet.acell(f'B{cell.row}').value
-                    goal = int(self.g_service.worksheet.acell(f'C{cell.row}').value)*60*60 if u_data[4] == '' else u_data[4]
+                if members is not False and u_data[3] != '':
+                    name = members[1]
+                    goal = int(members[2])*60*60 if u_data[4] == '' else u_data[4]
                     str_message = str_message + get_user_stat(u_data[2] if name == '' else name, u_data[3], goal)
-
+            
             await message.channel.send(str_message)
 
 

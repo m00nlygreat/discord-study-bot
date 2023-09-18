@@ -241,6 +241,8 @@ class DiscordManager(discord.Client):
             all_data_list = self.g_service.worksheet.get_all_values()
             s_data_list = []
 
+            print(f'[DEBUG] all_data_list >>>> {all_data_list}')
+
             # person 은 3번째 컬럼의 데이터
             for item in all_data_list:
                 if '-' in item[0]:

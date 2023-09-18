@@ -174,8 +174,9 @@ class DiscordManager(discord.Client):
         print(f'{debug_now} [DEBUG] on_message', message)
         # print(f'[DEBUG] Catch message event: [{message.author}]')
         # 봇 이벤트 인 경우 종료
-        if message.author == self.user:
-            return
+        # TODO: 테스트용 주석
+        #if message.author == self.user:
+        #    return
         # 설정된 채널인 경우만 아래 로직 수행
         if message.channel.name == DS_CHANNEL_NAME or message.channel.name == CHANNEL_NAME:
             # 핑 테스트 용

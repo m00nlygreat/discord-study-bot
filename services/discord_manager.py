@@ -251,7 +251,7 @@ class DiscordManager(discord.Client):
                 else:
                     start_week_ts = time.mktime(datetime.strptime(start_week, "%Y-%m-%d %H:%M:%S").timetuple())
                     end_week_ts = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
-                    # print(type(item[0]), item[0], start_week_ts, end_week_ts)
+                    print(type(item[0]), item[0], start_week_ts, end_week_ts)
                     try:
                         entry = float(item[0])
                         if start_week_ts < entry and entry < end_week_ts:
@@ -259,7 +259,7 @@ class DiscordManager(discord.Client):
                     except:
                         print('Exception !')
 
-            print(f'[DEBUG] s_data_list >> {s_data_list}')
+            # print(f'[DEBUG] s_data_list >> {s_data_list}')
             
             # user 데이터 정리
             report_data = []

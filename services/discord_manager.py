@@ -223,7 +223,9 @@ class DiscordManager(discord.Client):
         # 차트 전송 참고: https://quickchart.io/documentation/send-charts-discord-bot/
         if '!리포트' in message.content:
             # 조회 기간은 월 ~ 다음날 00시 까지
-            today_weekday = datetime.today().weekday()
+            today_weekday = datetime.now(timezone(timedelta(hours=9))).weekday()
+            # print(f'[DEBUG] weekday >>> {today_weekday}')
+            
             start_week = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=today_weekday)
             start_week = start_week.strftime("%Y-%m-%d 00:00:00")
             # start_week = time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
@@ -231,7 +233,7 @@ class DiscordManager(discord.Client):
             end_week = datetime.now(timezone(timedelta(hours=9))) + timedelta(days=1)
             # end_week = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
 
-            print(type(start_week), start_week, type(end_week), end_week)
+            # print(type(start_week), start_week, type(end_week), end_week)
 
 
             # sheet 설정
@@ -240,6 +242,8 @@ class DiscordManager(discord.Client):
             # 조회 기간에 해당되는 데이터 취합
             all_data_list = self.g_service.worksheet.get_all_values()
             s_data_list = []
+
+            # print(f'[DEBUG] all_data_list >>>> {all_data_list}')
 
             # person 은 3번째 컬럼의 데이터
             for item in all_data_list:
@@ -256,6 +260,9 @@ class DiscordManager(discord.Client):
                             s_data_list.append(item)
                     except:
                         print('Exception !')
+
+            # print(f'[DEBUG] s_data_list >> {s_data_list}')
+            
             # user 데이터 정리
             report_data = []
             if len(s_data_list) > 0:
@@ -294,7 +301,6 @@ class DiscordManager(discord.Client):
             '''
             for u_data in report_data:
                 members = find_item_in_arr(all_members, u_data[2], 0)
-                # print(f'[DEBUG] members >> {members}')
                 if members is not False and u_data[3] != '':
                     name = members[1]
                     goal = int(members[2])*60*60 if u_data[4] == '' else u_data[4]

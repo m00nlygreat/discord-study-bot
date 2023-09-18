@@ -233,7 +233,7 @@ class DiscordManager(discord.Client):
             end_week = datetime.now(timezone(timedelta(hours=9))) + timedelta(days=1)
             # end_week = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
 
-            print(type(start_week), start_week, type(end_week), end_week)
+            # print(type(start_week), start_week, type(end_week), end_week)
 
 
             # sheet 설정
@@ -301,10 +301,6 @@ class DiscordManager(discord.Client):
             '''
             for u_data in report_data:
                 members = find_item_in_arr(all_members, u_data[2], 0)
-                print('@'*20)
-                print(f'[DEBUG] members >> {members}')
-                print(f'[DEBUG] u_data >> {u_data[3]}')
-                print('@'*20)
                 if members is not False and u_data[3] != '':
                     name = members[1]
                     goal = int(members[2])*60*60 if u_data[4] == '' else u_data[4]

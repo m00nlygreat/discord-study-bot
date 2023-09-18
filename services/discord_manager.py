@@ -223,9 +223,8 @@ class DiscordManager(discord.Client):
         # 차트 전송 참고: https://quickchart.io/documentation/send-charts-discord-bot/
         if '!리포트' in message.content:
             # 조회 기간은 월 ~ 다음날 00시 까지
-            today_weekday = datetime.today().weekday()
-
-            print(f'[DEBUG] weekday >>> {today_weekday}')
+            today_weekday = datetime.now(timezone(timedelta(hours=9))).weekday()
+            # print(f'[DEBUG] weekday >>> {today_weekday}')
             
             start_week = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=today_weekday)
             start_week = start_week.strftime("%Y-%m-%d 00:00:00")
@@ -254,7 +253,7 @@ class DiscordManager(discord.Client):
                 else:
                     start_week_ts = time.mktime(datetime.strptime(start_week, "%Y-%m-%d %H:%M:%S").timetuple())
                     end_week_ts = time.mktime(datetime.strptime(end_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())
-                    print(type(item[0]), item[0], start_week_ts, end_week_ts)
+                    # print(type(item[0]), item[0], start_week_ts, end_week_ts)
                     try:
                         entry = float(item[0])
                         if start_week_ts < entry and entry < end_week_ts:

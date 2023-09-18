@@ -224,6 +224,9 @@ class DiscordManager(discord.Client):
         if '!리포트' in message.content:
             # 조회 기간은 월 ~ 다음날 00시 까지
             today_weekday = datetime.today().weekday()
+
+            print(f'[DEBUG] weekday >>> {today_weekday}')
+            
             start_week = datetime.now(timezone(timedelta(hours=9))) - timedelta(days=today_weekday)
             start_week = start_week.strftime("%Y-%m-%d 00:00:00")
             # start_week = time.mktime(datetime.strptime(start_week.strftime("%Y-%m-%d 00:00:00"), "%Y-%m-%d %H:%M:%S").timetuple())

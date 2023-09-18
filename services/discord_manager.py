@@ -174,9 +174,8 @@ class DiscordManager(discord.Client):
         print(f'{debug_now} [DEBUG] on_message', message)
         # print(f'[DEBUG] Catch message event: [{message.author}]')
         # 봇 이벤트 인 경우 종료
-        # TODO: 테스트용 주석
-        #if message.author == self.user:
-        #    return
+        if message.author == self.user:
+            return
         # 설정된 채널인 경우만 아래 로직 수행
         if message.channel.name == DS_CHANNEL_NAME or message.channel.name == CHANNEL_NAME:
             # 핑 테스트 용
@@ -295,7 +294,10 @@ class DiscordManager(discord.Client):
             '''
             for u_data in report_data:
                 members = find_item_in_arr(all_members, u_data[2], 0)
-                # print(f'[DEBUG] members >> {members}')
+                print('@'*20)
+                print(f'[DEBUG] members >> {members}')
+                print(f'[DEBUG] u_data >> {u_data[3]}')
+                print('@'*20)
                 if members is not False and u_data[3] != '':
                     name = members[1]
                     goal = int(members[2])*60*60 if u_data[4] == '' else u_data[4]
